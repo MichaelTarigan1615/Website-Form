@@ -1,4 +1,4 @@
-// load kecamatan saat pertama buka
+import { dataWilayah } from './dataWilayah.js';
 window.onload = function() {
   let kec = document.getElementById("kecamatan");
   Object.keys(dataWilayah).forEach(k => {
@@ -112,3 +112,9 @@ document.getElementById("formData").addEventListener("submit", function(e){
     btnSubmit.disabled = false;
   });
 });
+
+// Membuka akses fungsi agar bisa dipanggil oleh inline HTML (onclick / onchange)
+window.updateKelurahan = updateKelurahan;
+window.updateKepling = updateKepling;
+window.hapusPendaftar = hapusPendaftar;
+window.tambahPendaftar = tambahPendaftar;
