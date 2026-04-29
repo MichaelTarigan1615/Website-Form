@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Sosialisasi BPJS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<form id="formData">
+  
+  <div class="header-form">
+    <h2>Form Hasil Sosialisasi</h2>
+    <p>Silakan lengkapi data di bawah ini. Tanda <span class="required">*</span> wajib diisi.</p>
+  </div>
+
+  <div class="card">
+    <label for="nama">Nama Pengisi <span class="required">*</span></label>
+    <input type="text" id="nama" placeholder="Jawaban Anda" required>
+  </div>
+
+  <div class="card">
+    <label for="nim">NIM <span class="required">*</span></label>
+    <input type="text" id="nim" placeholder="Jawaban Anda" required>
+  </div>
+
+  <div class="card">
+    <label for="tanggal">Tanggal Sosialisasi <span class="required">*</span></label>
+    <input type="date" id="tanggal" required>
+  </div>
+
+  <div class="card">
+    <label for="kecamatan">Kecamatan <span class="required">*</span></label>
+    <select id="kecamatan" onchange="updateKelurahan()" required>
+      <option value="">Pilih Kecamatan</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <label for="kelurahan">Kelurahan <span class="required">*</span></label>
+    <select id="kelurahan" onchange="updateKepling()" required>
+      <option value="">Pilih Kelurahan</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <label for="kepling">Nomor Kepling <span class="required">*</span></label>
+    <select id="kepling" required>
+      <option value="">Pilih Kepling</option>
+    </select>
+  </div>
+
+  <div class="section-title">
+    <h3>Data Pendaftar (Jika Ada)</h3>
+  </div>
+  
+  <div id="pendaftarContainer"></div>
+
+  <button type="button" class="tambah-btn" onclick="tambahPendaftar()">+ Tambah Pendaftar</button>
+  
+  <div class="submit-container">
+    <button type="submit" class="submit-btn">Kirim Form</button>
+  </div>
+
+</form>
+
+<script src="dataWilayah.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
