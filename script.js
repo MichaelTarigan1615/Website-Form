@@ -66,18 +66,29 @@ document.getElementById("formData").addEventListener("submit", function(e){
   e.preventDefault();
 
   let pendaftar = [];
-  document.querySelectorAll(".card.clearfix").forEach(card => {
-    let pendaftar = [];
-  document.querySelectorAll(".card.clearfix").forEach(card => {
-    pendaftar.push({
-      nama: card.querySelector(".nama_pendaftar").value,
-      // Tambahkan tanda petik langsung dari sini
-      nik: "'" + card.querySelector(".nik").value,
-      kjp: "'" + card.querySelector(".kjp").value,
-      telepon: "'" + card.querySelector(".telepon").value
-    });
-  });
-  });
+  // CARA SUPER AMAN: Ambil langsung semua isi dari dalam wadah pendaftarContainer
+  let wadahPendaftar = document.getElementById("pendaftarContainer");
+  let pendaftarCards = wadahPendaftar.children;
+
+  for (let i = 0; i < pendaftarCards.length; i++) {
+    let card = pendaftarCards[i];
+    
+    // Ambil nilai dari masing-masing elemen di dalam wadah
+    let namaEl = card.querySelector(".nama_pendaftar");
+    let nikEl = card.querySelector(".nik");
+    let kjpEl = card.querySelector(".kjp");
+    let telpEl = card.querySelector(".telepon");
+
+    // Jika semua elemen ditemukan, simpan ke dalam array pendaftar
+    if(namaEl && nikEl && kjpEl && telpEl) {
+      pendaftar.push({
+        nama: namaEl.value,
+        nik: "'" + nikEl.value,         // Memaksa NIK jadi teks agar 16 digit tidak rusak
+        kjp: "'" + kjpEl.value,         // Memaksa KJP jadi teks
+        telepon: "'" + telpEl.value     // Memaksa Telepon jadi teks agar 0 di depan aman
+      });
+    }
+  }
 
   const kecVal = document.getElementById("kecamatan").value;
   const kelVal = document.getElementById("kelurahan").value;
@@ -90,7 +101,7 @@ document.getElementById("formData").addEventListener("submit", function(e){
     kecamatan: kecVal,
     kelurahan: kelVal,
     kepling: kepVal,
-    pendaftar: pendaftar
+    pendaftar: pendaftar // Data pendaftar yang sudah dikumpulkan dimasukkan ke sini
   };
 
   const scriptURL = "https://script.google.com/macros/s/AKfycbwNKSCZwH-SFePziNbzbizfdsbxCHEorntqklsMtM22HxyOuPdvtVaJyxalybjTGZl6Tg/exec";
@@ -111,7 +122,7 @@ document.getElementById("formData").addEventListener("submit", function(e){
   })
   .catch(error => {
     console.error("Error!", error.message);
-    alert("Terjadi kesalahan.");
+    alert("Terjadi kesalahan saat mengirim data.");
     btnSubmit.innerHTML = "Kirim Form";
     btnSubmit.disabled = false;
   });
