@@ -67,12 +67,16 @@ document.getElementById("formData").addEventListener("submit", function(e){
 
   let pendaftar = [];
   document.querySelectorAll(".card.clearfix").forEach(card => {
+    let pendaftar = [];
+  document.querySelectorAll(".card.clearfix").forEach(card => {
     pendaftar.push({
       nama: card.querySelector(".nama_pendaftar").value,
-      nik: card.querySelector(".nik").value,
-      kjp: card.querySelector(".kjp").value,
-      telepon: card.querySelector(".telepon").value
+      // Tambahkan tanda petik langsung dari sini
+      nik: "'" + card.querySelector(".nik").value,
+      kjp: "'" + card.querySelector(".kjp").value,
+      telepon: "'" + card.querySelector(".telepon").value
     });
+  });
   });
 
   const kecVal = document.getElementById("kecamatan").value;
