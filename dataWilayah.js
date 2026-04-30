@@ -1,4 +1,4 @@
-const dataWilayah = {
+export const dataWilayah = {
   "MEDAN AMPLAS": {
     "AMPLAS": [
       "I",
