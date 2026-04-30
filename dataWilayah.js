@@ -1,4 +1,4 @@
-export const dataWilayah = {
+const dataWilayah = {
   "MEDAN AMPLAS": {
     "AMPLAS": [
       "I",
@@ -19,11 +19,11 @@ export const dataWilayah = {
       "II",
       "III",
       "IV",
-      "IX",
       "V",
       "VI",
       "VII",
       "VIII",
+      "IX",
       "X",
       "XI",
       "XII",
@@ -35,11 +35,11 @@ export const dataWilayah = {
       "II",
       "III",
       "IV",
-      "IX",
       "V",
       "VI",
       "VII",
       "VIII",
+      "IX",
       "X",
       "XI",
       "XII",
@@ -54,11 +54,11 @@ export const dataWilayah = {
       "II",
       "III",
       "IV",
-      "IX",
       "V",
       "VI",
       "VII",
       "VIII",
+      "IX",
       "X",
       "XI",
       "XII"
@@ -68,22 +68,22 @@ export const dataWilayah = {
       "II",
       "III",
       "IV",
-      "IX",
       "V",
       "VI",
       "VII",
-      "VIII"
+      "VIII",
+      "IX"
     ],
     "TIMBANG DELI": [
       "I",
       "II",
       "III",
       "IV",
-      "IX",
       "V",
       "VI",
       "VII",
       "VIII",
+      "IX",
       "X",
       "XI",
       "XII",
@@ -253,6 +253,20 @@ export const dataWilayah = {
       "XV",
       "XVI"
     ],
+    "TEGAL SARI": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+      "X",
+      "XI",
+      "XII"
+    ],
     "TEGAL SARI II": [
       "I",
       "II",
@@ -274,20 +288,6 @@ export const dataWilayah = {
       "VIII",
       "IX",
       "X"
-    ],
-    "TEGAL SARI": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI",
-      "VII",
-      "VIII",
-      "IX",
-      "X",
-      "XI",
-      "XII"
     ]
   },
   "MEDAN BARAT": {
@@ -637,102 +637,6 @@ export const dataWilayah = {
       "XX"
     ]
   },
-  "MEDAN DENAI": {
-    "BINJAI": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI",
-      "VII",
-      "VIII",
-      "IX",
-      "X",
-      "XI",
-      "XII",
-      "XIII",
-      "XIV",
-      "XV",
-      "XVI",
-      "XVII",
-      "XVIII",
-      "XIX",
-      "XX"
-    ],
-    "DENAI": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI",
-      "VII",
-      "VIII",
-      "IX"
-    ],
-    "MEDAN TENGGARA": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI",
-      "VII",
-      "VIII",
-      "IX",
-      "X",
-      "XI"
-    ],
-    "TEGAL SARI MANDALA I": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI",
-      "VII",
-      "VIII",
-      "IX",
-      "X",
-      "XI",
-      "XII"
-    ],
-    "TEGAL SARI MANDALA II": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI",
-      "VII",
-      "VIII",
-      "IX",
-      "X",
-      "XI",
-      "XII",
-      "XIII",
-      "XIV",
-      "XV"
-    ],
-    "TEGAL SARI MANDALA III": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI",
-      "VII",
-      "VIII",
-      "IX",
-      "X",
-      "XI",
-      "XII",
-      "XIII",
-      "XIV",
-      "XV"
-    ]
-  },
   "MEDAN DELI": {
     "KOTA BANGUN": [
       "I",
@@ -850,6 +754,102 @@ export const dataWilayah = {
       "XIV",
       "XV",
       "XVI"
+    ]
+  },
+  "MEDAN DENAI": {
+    "BINJAI": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+      "X",
+      "XI",
+      "XII",
+      "XIII",
+      "XIV",
+      "XV",
+      "XVI",
+      "XVII",
+      "XVIII",
+      "XIX",
+      "XX"
+    ],
+    "DENAI": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX"
+    ],
+    "MEDAN TENGGARA": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+      "X",
+      "XI"
+    ],
+    "TEGAL SARI MANDALA I": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+      "X",
+      "XI",
+      "XII"
+    ],
+    "TEGAL SARI MANDALA II": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+      "X",
+      "XI",
+      "XII",
+      "XIII",
+      "XIV",
+      "XV"
+    ],
+    "TEGAL SARI MANDALA III": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+      "X",
+      "XI",
+      "XII",
+      "XIII",
+      "XIV",
+      "XV"
     ]
   },
   "MEDAN HELVETIA": {
@@ -1052,25 +1052,6 @@ export const dataWilayah = {
     ]
   },
   "MEDAN KOTA": {
-    "SITIREJO I": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI",
-      "VII",
-      "VIII",
-      "IX",
-      "X",
-      "XI",
-      "XII",
-      "XIII",
-      "XIV",
-      "XV",
-      "XVI",
-      "XVII"
-    ],
     "KOTA MATSUM III": [
       "I",
       "II",
@@ -1160,6 +1141,25 @@ export const dataWilayah = {
       "XII",
       "XIII",
       "XIV"
+    ],
+    "SITIREJO I": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+      "X",
+      "XI",
+      "XII",
+      "XIII",
+      "XIV",
+      "XV",
+      "XVI",
+      "XVII"
     ],
     "SUDIREJO 2": [
       "I",
@@ -1653,7 +1653,6 @@ export const dataWilayah = {
       "II",
       "III",
       "IV",
-      "V/XV",
       "VI",
       "VII",
       "VIII",
@@ -1664,7 +1663,8 @@ export const dataWilayah = {
       "XIII",
       "XIV",
       "XVI",
-      "XVII"
+      "XVII",
+      "V/XV"
     ],
     "SEI PUTIH BARAT": [
       "I",
@@ -1733,14 +1733,6 @@ export const dataWilayah = {
     ]
   },
   "MEDAN POLONIA": {
-    "SUKA DAMAI": [
-      "I",
-      "II",
-      "III",
-      "IV",
-      "V",
-      "VI"
-    ],
     "ANGGRUNG": [
       "I",
       "II",
@@ -1788,6 +1780,14 @@ export const dataWilayah = {
       "VII",
       "VIII",
       "IX"
+    ],
+    "SUKA DAMAI": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI"
     ]
   },
   "MEDAN SELAYANG": {
