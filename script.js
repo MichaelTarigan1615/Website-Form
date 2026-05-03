@@ -1,11 +1,21 @@
-// load kecamatan saat pertama buka
-window.onload = function() {
+// Memuat data dengan lebih aman menggunakan DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function() {
   let kec = document.getElementById("kecamatan");
 
+  // Pengaman: Mengecek apakah dataWilayah.js berhasil dimuat
+  if (typeof dataWilayah === "undefined") {
+    alert("Error: File dataWilayah.js tidak terbaca! Pastikan nama file di index.html sudah benar (perhatikan huruf besar/kecilnya).");
+    return;
+  }
+
+  // Menggunakan appendChild (lebih aman dan bersih daripada innerHTML)
   Object.keys(dataWilayah).forEach(k => {
-    kec.innerHTML += `<option value="${k}">${k}</option>`;
+    let opt = document.createElement("option");
+    opt.value = k;
+    opt.text = k;
+    kec.appendChild(opt);
   });
-}
+});
 
 // update kelurahan
 function updateKelurahan() {
