@@ -2,13 +2,19 @@
 document.addEventListener("DOMContentLoaded", function() {
   let kec = document.getElementById("kecamatan");
 
-  // Pengaman: Mengecek apakah dataWilayah.js berhasil dimuat
+  // Detektif 1: Apakah filenya tidak terbaca?
   if (typeof dataWilayah === "undefined") {
-    alert("Error: File dataWilayah.js tidak terbaca! Pastikan nama file di index.html sudah benar (perhatikan huruf besar/kecilnya).");
+    alert("⚠️ GAGAL: File dataWilayah.js tidak terbaca! Pasti ada beda huruf besar/kecil antara di folder dan di index.html.");
     return;
   }
 
-  // Menggunakan appendChild (lebih aman dan bersih daripada innerHTML)
+  // Detektif 2: Apakah filenya terbaca tapi isinya KOSONG?
+  if (Object.keys(dataWilayah).length === 0) {
+    alert("⚠️ GAGAL: File dataWilayah.js terbaca, tapi ISINYA KOSONG! Anda belum menjalankan ulang 'node generateData.js'.");
+    return;
+  }
+
+  // Jika aman, masukkan data ke dropdown
   Object.keys(dataWilayah).forEach(k => {
     let opt = document.createElement("option");
     opt.value = k;
