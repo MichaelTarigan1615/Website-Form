@@ -135,7 +135,7 @@ document.getElementById("formData").addEventListener("submit", function(e){
   };
 
   // URL ini sudah menggunakan link aktif Anda
-  const scriptURL = "https://script.google.com/macros/s/AKfycbyxEc0QtkcH_UTb5hcddWtn70zAgv9neiq3e5iDQqg_IOsRHmHuyAcgYKthrhJM9ZrJog/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxRSSxgKzWz7324HZ7QHlKRwU_j51K9iN1cppP-3QpHS-DkjO-uv_6oAUOTIORwGIgoUw/exec";
 
   let btnSubmit = document.querySelector('.submit-btn');
   btnSubmit.innerHTML = "Mengirim...";
