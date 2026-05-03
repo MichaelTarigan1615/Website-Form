@@ -1,17 +1,21 @@
-import { dataWilayah } from './dataWilayah.js';
+// load kecamatan saat pertama buka
 window.onload = function() {
   let kec = document.getElementById("kecamatan");
+
   Object.keys(dataWilayah).forEach(k => {
     kec.innerHTML += `<option value="${k}">${k}</option>`;
   });
 }
 
+// update kelurahan
 function updateKelurahan() {
   let kec = document.getElementById("kecamatan").value;
   let kel = document.getElementById("kelurahan");
   let kep = document.getElementById("kepling");
+
   kel.innerHTML = "<option value=''>Pilih Kelurahan</option>";
   kep.innerHTML = "<option value=''>Pilih Kepling</option>";
+
   if (kec && dataWilayah[kec]) {
     Object.keys(dataWilayah[kec]).forEach(k => {
       kel.innerHTML += `<option value="${k}">${k}</option>`;
@@ -19,11 +23,14 @@ function updateKelurahan() {
   }
 }
 
+// update kepling
 function updateKepling() {
   let kec = document.getElementById("kecamatan").value;
   let kel = document.getElementById("kelurahan").value;
   let kep = document.getElementById("kepling");
+
   kep.innerHTML = "<option value=''>Pilih Kepling</option>";
+
   if (kec && kel && dataWilayah[kec][kel]) {
     dataWilayah[kec][kel].forEach(k => {
       kep.innerHTML += `<option value="${k}">${k}</option>`;
@@ -31,64 +38,71 @@ function updateKepling() {
   }
 }
 
+// fungsi hapus pendaftar
 function hapusPendaftar(btn) {
+  // Menghapus elemen card (induk dari tombol hapus)
   btn.parentElement.remove();
 }
 
+// tambah card pendaftar
 function tambahPendaftar() {
   let container = document.getElementById("pendaftarContainer");
+
   let div = document.createElement("div");
   div.classList.add("card", "clearfix");
 
+  // Format Card Baru (Atribut 'required' memastikan tidak boleh kosong)
   div.innerHTML = `
     <button type="button" class="hapus-btn" onclick="hapusPendaftar(this)">Hapus</button>
+    
     <div class="pendaftar-item">
       <label>Nama Pendaftar <span class="required">*</span></label>
       <input type="text" class="nama_pendaftar" required>
     </div>
+
     <div class="pendaftar-item">
       <label>NIK (16 digit) <span class="required">*</span></label>
       <input type="text" class="nik" required minlength="16" maxlength="16">
     </div>
+
     <div class="pendaftar-item">
       <label>No KJP <span class="required">*</span></label>
       <input type="text" class="kjp" required>
     </div>
+
     <div class="pendaftar-item">
       <label>Nomor Telepon <span class="required">*</span></label>
       <input type="tel" class="telepon" required>
     </div>
   `;
+
   container.appendChild(div);
 }
 
+// submit
 document.getElementById("formData").addEventListener("submit", function(e){
   e.preventDefault();
 
-  let pendaftar = [];
-  // CARA SUPER AMAN: Ambil langsung semua isi dari dalam wadah pendaftarContainer
-  let wadahPendaftar = document.getElementById("pendaftarContainer");
-  let pendaftarCards = wadahPendaftar.children;
+  // 1. MENGAMBIL SEMUA CARD PENDAFTAR
+  let cards = document.querySelectorAll(".card.clearfix");
 
-  for (let i = 0; i < pendaftarCards.length; i++) {
-    let card = pendaftarCards[i];
-    
-    // Ambil nilai dari masing-masing elemen di dalam wadah
-    let namaEl = card.querySelector(".nama_pendaftar");
-    let nikEl = card.querySelector(".nik");
-    let kjpEl = card.querySelector(".kjp");
-    let telpEl = card.querySelector(".telepon");
-
-    // Jika semua elemen ditemukan, simpan ke dalam array pendaftar
-    if(namaEl && nikEl && kjpEl && telpEl) {
-      pendaftar.push({
-        nama: namaEl.value,
-        nik: "'" + nikEl.value,         // Memaksa NIK jadi teks agar 16 digit tidak rusak
-        kjp: "'" + kjpEl.value,         // Memaksa KJP jadi teks
-        telepon: "'" + telpEl.value     // Memaksa Telepon jadi teks agar 0 di depan aman
-      });
-    }
+  // 2. VALIDASI: PASTIKAN MINIMAL ADA 1 PENDAFTAR
+  if (cards.length === 0) {
+    alert("Peringatan: Anda wajib menambahkan minimal satu data pendaftar!");
+    return; // Hentikan proses pengiriman form
   }
+
+  let pendaftar = [];
+
+  // 3. JIKA VALIDASI LOLOS, TANGKAP DATANYA
+  cards.forEach(card => {
+    pendaftar.push({
+      nama: card.querySelector(".nama_pendaftar").value,
+      nik: card.querySelector(".nik").value,
+      kjp: card.querySelector(".kjp").value,
+      telepon: card.querySelector(".telepon").value
+    });
+  });
 
   const kecVal = document.getElementById("kecamatan").value;
   const kelVal = document.getElementById("kelurahan").value;
@@ -101,10 +115,11 @@ document.getElementById("formData").addEventListener("submit", function(e){
     kecamatan: kecVal,
     kelurahan: kelVal,
     kepling: kepVal,
-    pendaftar: pendaftar // Data pendaftar yang sudah dikumpulkan dimasukkan ke sini
+    pendaftar: pendaftar
   };
 
-  const scriptURL = "https://script.google.com/macros/s/AKfycbwNKSCZwH-SFePziNbzbizfdsbxCHEorntqklsMtM22HxyOuPdvtVaJyxalybjTGZl6Tg/exec";
+  // URL ini sudah menggunakan link aktif Anda
+  const scriptURL = "https://script.google.com/macros/s/AKfycbyxEc0QtkcH_UTb5hcddWtn70zAgv9neiq3e5iDQqg_IOsRHmHuyAcgYKthrhJM9ZrJog/exec";
 
   let btnSubmit = document.querySelector('.submit-btn');
   btnSubmit.innerHTML = "Mengirim...";
@@ -122,14 +137,8 @@ document.getElementById("formData").addEventListener("submit", function(e){
   })
   .catch(error => {
     console.error("Error!", error.message);
-    alert("Terjadi kesalahan saat mengirim data.");
+    alert("Terjadi kesalahan.");
     btnSubmit.innerHTML = "Kirim Form";
     btnSubmit.disabled = false;
   });
 });
-
-// Membuka akses fungsi agar bisa dipanggil oleh inline HTML (onclick / onchange)
-window.updateKelurahan = updateKelurahan;
-window.updateKepling = updateKepling;
-window.hapusPendaftar = hapusPendaftar;
-window.tambahPendaftar = tambahPendaftar;
