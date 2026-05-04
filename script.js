@@ -22,13 +22,13 @@ document.addEventListener("DOMContentLoaded", function() {
     barisBawaan.push(['', '', '']); 
   }
 
-  // MENGHIDUPKAN FITUR SPREADSHEET 
+  // MENGHIDUPKAN FITUR SPREADSHEET
   mySpreadsheet = jspreadsheet(document.getElementById('spreadsheet'), {
     data: barisBawaan,
     columns: [
-      { type: 'text', title: 'NIK 16 Digit (*)', width: 220, maxlength: 16 },
+      { type: 'text', title: 'NIK 16 Digit (*)', width: 220 },
       { type: 'text', title: 'Nama TK (*)', width: 400 },
-      { type: 'text', title: 'No. Telepon (*)', width: 220, maxlength: 15 }
+      { type: 'text', title: 'No. Telepon (*)', width: 220 }
     ],
     tableOverflow: true,   
     tableWidth: "100%",    
@@ -37,34 +37,44 @@ document.addEventListener("DOMContentLoaded", function() {
     allowDeleteColumn: false,
     textLineBreak: false,
     
-    // LOGIKA CERDAS: VALIDASI INSTAN SAAT ENTER/PINDAH SEL
+    // LOGIKA CERDAS: MEMOTONG PAKSA LEBIH DARI 16 DIGIT & HAPUS HURUF
     onchange: function(instance, cell, x, y, value) {
-      // x == 0 adalah Kolom NIK
-      if (x == 0) {
-        let nikStr = value.toString().trim();
+      let col = parseInt(x);
+      let row = parseInt(y);
+      let valStr = value.toString().trim();
+
+      if (valStr === "") return; // Abaikan jika dikosongkan
+
+      // JIKA YANG DIISI ADALAH KOLOM NIK (Kolom ke-0)
+      if (col === 0) {
+        // Buang paksa semua karakter yang BUKAN angka (huruf/simbol)
+        let hanyaAngka = valStr.replace(/[^0-9]/g, ''); 
         
-        if (nikStr !== "") {
-          // 1. Cek apakah ada huruf
-          let isHanyaAngka = /^\d+$/.test(nikStr);
-          if (!isHanyaAngka) {
-            alert(`Peringatan (Baris ${parseInt(y) + 1}): NIK HARUS BERUPA ANGKA! Anda memasukkan huruf atau simbol.`);
-            // Opsional: Kosongkan kembali sel jika salah
-            // mySpreadsheet.setValueFromCoords(x, y, ''); 
-          } 
-          // 2. Cek apakah digitnya kurang dari 16
-          else if (nikStr.length < 16) {
-            alert(`Peringatan (Baris ${parseInt(y) + 1}): NIK Anda kurang! NIK wajib 16 digit. (Saat ini hanya ${nikStr.length} digit)`);
+        // 1. Jika pengguna mengetikkan huruf/simbol
+        if (valStr !== hanyaAngka) {
+          alert(`Peringatan (Baris ${row + 1}): NIK HARUS ANGKA! Huruf/simbol akan dihapus otomatis.`);
+          mySpreadsheet.setValueFromCoords(col, row, hanyaAngka);
+          return;
+        }
+
+        // 2. Jika digit NIK kurang atau lebih dari 16
+        if (hanyaAngka.length !== 16) {
+          if (hanyaAngka.length > 16) {
+            // POTONG PAKSA jadi 16 digit saja
+            alert(`Peringatan (Baris ${row + 1}): NIK KEPANJANGAN! NIK dipotong otomatis menjadi 16 digit pertama.`);
+            mySpreadsheet.setValueFromCoords(col, row, hanyaAngka.substring(0, 16));
+          } else {
+            // Beri peringatan jika kurang
+            alert(`Peringatan (Baris ${row + 1}): NIK KURANG! NIK wajib 16 digit. (Saat ini: ${hanyaAngka.length} digit)`);
           }
         }
       } 
-      // x == 2 adalah Kolom Telepon
-      else if (x == 2) {
-        let telpStr = value.toString().trim();
-        if (telpStr !== "") {
-          let isHanyaAngka = /^\d+$/.test(telpStr);
-          if (!isHanyaAngka) {
-            alert(`Peringatan (Baris ${parseInt(y) + 1}): Nomor Telepon harus berupa angka!`);
-          }
+      // JIKA YANG DIISI ADALAH KOLOM TELEPON (Kolom ke-2)
+      else if (col === 2) {
+        let hanyaAngka = valStr.replace(/[^0-9]/g, '');
+        if (valStr !== hanyaAngka) {
+          alert(`Peringatan (Baris ${row + 1}): Nomor Telepon HARUS ANGKA! Huruf/simbol akan dihapus otomatis.`);
+          mySpreadsheet.setValueFromCoords(col, row, hanyaAngka);
         }
       }
     }
@@ -117,36 +127,28 @@ document.getElementById("formData").addEventListener("submit", function(e){
   let pendaftar = [];
   let adaError = false;
 
-  // Evaluasi baris per baris sebelum mengirim
+  // Evaluasi kembali sebelum benar-benar terkirim
   rawData.forEach((row, index) => {
     let nik = (row[0] || "").toString().trim();
     let nama_tk = (row[1] || "").toString().trim();
     let telepon = (row[2] || "").toString().trim();
 
     if (nik !== "" || nama_tk !== "" || telepon !== "") {
-      
-      // Validasi 1: Pastikan lengkap
+      // 1. Cek apakah ada kolom yang bolong
       if (nik === "" || nama_tk === "" || telepon === "") {
         alert(`Gagal Kirim: Data belum lengkap pada Baris ke-${index + 1} di Spreadsheet!`);
         adaError = true;
         return; 
       }
 
-      // Validasi 2: Pastikan Angka Semua (Double Check)
-      if (!/^\d+$/.test(nik) || !/^\d+$/.test(telepon)) {
-        alert(`Gagal Kirim: Pastikan NIK dan Telepon pada Baris ke-${index + 1} hanya berisi angka!`);
-        adaError = true;
-        return;
-      }
-
-      // Validasi 3: Pastikan Pas 16 Digit
+      // 2. Final check NIK (Harus Pas 16 Digit)
       if (nik.length !== 16) {
-        alert(`Gagal Kirim: NIK pada Baris ke-${index + 1} harus tepat 16 digit!`);
+        alert(`Gagal Kirim: NIK pada Baris ke-${index + 1} masih bermasalah! (Wajib 16 digit)`);
         adaError = true;
         return;
       }
       
-      // Jika semua aman, masukkan ke keranjang
+      // Masukkan ke array jika aman
       pendaftar.push({ nik: nik, nama_tk: nama_tk, telepon: telepon });
     }
   });
@@ -172,8 +174,8 @@ document.getElementById("formData").addEventListener("submit", function(e){
     pendaftar: pendaftar
   };
 
-  // ⚠️ ISI DENGAN URL APPS SCRIPT ANDA ⚠️
-  const scriptURL = "https://script.google.com/macros/s/AKfycbz4WhOQWVoP1xIrI98RsofVA0UF03BGNHrQjahhLZOrvYdmbk3vWo2bXhCY5so5umZ1Tw/exec"; 
+  // ⚠️ PASTIKAN URL SCRIPT GOOGLE ANDA SUDAH BENAR DI BAWAH INI ⚠️
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxRSSxgKzWz7324HZ7QHlKRwU_j51K9iN1cppP-3QpHS-DkjO-uv_6oAUOTIORwGIgoUw/exec"; 
 
   let btnSubmit = document.querySelector('.submit-btn');
   btnSubmit.innerHTML = "Mengirim...";
