@@ -16,19 +16,21 @@ document.addEventListener("DOMContentLoaded", function() {
     kec.appendChild(opt);
   });
 
-  // MEMBUAT 15 BARIS KOSONG
+  // MEMBUAT 15 BARIS KOSONG (Kini ada 4 Kolom)
   let barisBawaan = [];
   for(let i = 0; i < 15; i++) {
-    barisBawaan.push(['', '', '']); 
+    barisBawaan.push(['', '', '', '']); 
   }
 
-  // MENGHIDUPKAN FITUR SPREADSHEET
+  // MENGHIDUPKAN FITUR SPREADSHEET (Ditambah Kolom Tanggal)
   mySpreadsheet = jspreadsheet(document.getElementById('spreadsheet'), {
     data: barisBawaan,
     columns: [
-      { type: 'text', title: 'NIK 16 Digit (*)', width: 220 },
-      { type: 'text', title: 'Nama TK (*)', width: 400 },
-      { type: 'text', title: 'No. Telepon (*)', width: 220 }
+      { type: 'text', title: 'NIK 16 Digit (*)', width: 180 },
+      { type: 'text', title: 'Nama TK (*)', width: 280 },
+      { type: 'text', title: 'No. Telepon (*)', width: 160 },
+      // FITUR BARU: Kalender otomatis di dalam tabel
+      { type: 'calendar', title: 'Tgl Daftar (*)', width: 140, options: { format: 'DD/MM/YYYY' } }
     ],
     tableOverflow: true,   
     tableWidth: "100%",    
@@ -37,52 +39,39 @@ document.addEventListener("DOMContentLoaded", function() {
     allowDeleteColumn: false,
     textLineBreak: false,
     
-    // =======================================================
     // PENJAGA 1: SAAT SEL SEDANG DIKETIK (LIVE TYPING)
-    // =======================================================
     oneditionstart: function(instance, cell, x, y) {
       let col = parseInt(x);
       
+      // Jika yang diedit NIK (0) atau Telepon (2)
       if (col === 0 || col === 2) {
-        // Cari elemen input yang sedang aktif dibuat oleh jspreadsheet
         let inputEditor = cell.querySelector('input') || document.querySelector('.jexcel_editor');
-        
         if (inputEditor) {
           inputEditor.addEventListener('input', function() {
-            // 1. Langsung hapus huruf/simbol
             let val = this.value.replace(/[^0-9]/g, '');
-            
-            // 2. TEBAS LANGSUNG JIKA LEBIH DARI BATAS!
-            if (col === 0 && val.length > 16) {
-              val = val.substring(0, 16);
-            } else if (col === 2 && val.length > 15) {
-              val = val.substring(0, 15);
-            }
-            
+            if (col === 0 && val.length > 16) val = val.substring(0, 16);
+            else if (col === 2 && val.length > 15) val = val.substring(0, 15);
             this.value = val;
           });
         }
       }
     },
 
-    // =======================================================
-    // PENJAGA 2: SAAT SELESAI MENGETIK / COPY-PASTE (TEKAN ENTER)
-    // =======================================================
+    // PENJAGA 2: SAAT SELESAI MENGETIK / COPY-PASTE
     onchange: function(instance, cell, x, y, value) {
       let col = parseInt(x);
       let row = parseInt(y);
       let valStr = value.toString().trim();
 
-      if (valStr === "") return; // Abaikan jika dikosongkan
+      if (valStr === "") return;
 
       if (col === 0) {
         let hanyaAngka = valStr.replace(/[^0-9]/g, '');
-
         if (hanyaAngka.length > 16) {
-          alert(`Peringatan (Baris ${row + 1}): NIK KEPANJANGAN!\nNIK otomatis dipotong menjadi 16 digit pertama.`);
+          alert(`Peringatan (Baris ${row + 1}): NIK KEPANJANGAN!\nOtomatis dipotong menjadi 16 digit pertama.`);
           mySpreadsheet.setValueFromCoords(col, row, hanyaAngka.substring(0, 16));
         } else if (hanyaAngka.length < 16) {
-          alert(`Peringatan (Baris ${row + 1}): NIK Anda KURANG!\nNIK wajib 16 digit. (Saat ini hanya ${hanyaAngka.length} digit)`);
+          alert(`Peringatan (Baris ${row + 1}): NIK Anda KURANG!\nWajib 16 digit. (Saat ini: ${hanyaAngka.length} digit)`);
         } else if (valStr !== hanyaAngka) {
           mySpreadsheet.setValueFromCoords(col, row, hanyaAngka);
         }
@@ -99,14 +88,12 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-// Fungsi untuk tombol tambah baris kustom
 function tambahBarisExcel() {
   let inputAngka = document.getElementById("jumlahBaris").value;
   let jumlah = parseInt(inputAngka) || 1;
   mySpreadsheet.insertRow(jumlah); 
 }
 
-// update kelurahan
 function updateKelurahan() {
   let kec = document.getElementById("kecamatan").value;
   let kel = document.getElementById("kelurahan");
@@ -122,7 +109,6 @@ function updateKelurahan() {
   }
 }
 
-// update kepling
 function updateKepling() {
   let kec = document.getElementById("kecamatan").value;
   let kel = document.getElementById("kelurahan").value;
@@ -145,29 +131,34 @@ document.getElementById("formData").addEventListener("submit", function(e){
   let pendaftar = [];
   let adaError = false;
 
-  // Evaluasi kembali sebelum benar-benar terkirim
+  // Evaluasi baris per baris (Kini ada row[3] untuk Tanggal)
   rawData.forEach((row, index) => {
     let nik = (row[0] || "").toString().trim();
     let nama_tk = (row[1] || "").toString().trim();
     let telepon = (row[2] || "").toString().trim();
+    let tanggal_daftar = (row[3] || "").toString().trim();
 
-    if (nik !== "" || nama_tk !== "" || telepon !== "") {
-      // 1. Cek apakah ada kolom yang bolong
-      if (nik === "" || nama_tk === "" || telepon === "") {
-        alert(`Gagal Kirim: Data belum lengkap pada Baris ke-${index + 1} di Spreadsheet!`);
+    if (nik !== "" || nama_tk !== "" || telepon !== "" || tanggal_daftar !== "") {
+      // Cek kelengkapan
+      if (nik === "" || nama_tk === "" || telepon === "" || tanggal_daftar === "") {
+        alert(`Gagal Kirim: Data belum lengkap pada Baris ke-${index + 1} di Spreadsheet! (Termasuk Tanggal Daftar)`);
         adaError = true;
         return; 
       }
 
-      // 2. Final check NIK (Harus Pas 16 Digit)
       if (nik.length !== 16) {
-        alert(`Gagal Kirim: NIK pada Baris ke-${index + 1} harus tepat 16 digit!`);
+        alert(`Gagal Kirim: NIK pada Baris ke-${index + 1} masih kurang dari 16 digit!`);
         adaError = true;
         return;
       }
       
       // Masukkan ke array jika aman
-      pendaftar.push({ nik: nik, nama_tk: nama_tk, telepon: telepon });
+      pendaftar.push({ 
+        nik: nik, 
+        nama_tk: nama_tk, 
+        telepon: telepon,
+        tanggal_daftar: tanggal_daftar
+      });
     }
   });
 
@@ -185,15 +176,15 @@ document.getElementById("formData").addEventListener("submit", function(e){
   let data = {
     nama: document.getElementById("nama").value,
     nim: document.getElementById("nim").value,
-    tanggal: document.getElementById("tanggal").value,
+    tanggal: document.getElementById("tanggal").value, // Ini tgl sosialisasi
     kecamatan: kecVal,
     kelurahan: kelVal,
     kepling: kepVal,
     pendaftar: pendaftar
   };
 
-  // ⚠️ PASTIKAN URL SCRIPT GOOGLE ANDA SUDAH BENAR DI BAWAH INI ⚠️
-  const scriptURL = "https://script.google.com/macros/s/AKfycbz4WhOQWVoP1xIrI98RsofVA0UF03BGNHrQjahhLZOrvYdmbk3vWo2bXhCY5so5umZ1Tw/exec"; 
+  // ⚠️ PASTIKAN URL SCRIPT GOOGLE ANDA SUDAH BENAR DI BAWAH INI NANTI ⚠️
+  const scriptURL = "https://script.google.com/macros/s/AKfycbweQ1mnrLcq_Kf5OEPy-bUk5PhA1vMpbO8Z9PIDVMt44teIwRwTqPMYaJfr_SYzPqvn5w/exec"; 
 
   let btnSubmit = document.querySelector('.submit-btn');
   btnSubmit.innerHTML = "Mengirim...";
