@@ -16,19 +16,20 @@ document.addEventListener("DOMContentLoaded", function() {
     kec.appendChild(opt);
   });
 
-  // MEMBUAT 15 BARIS KOSONG (Kini hanya 3 kolom: NIK, Nama TK, Telepon)
+  // MEMBUAT 15 BARIS KOSONG
   let barisBawaan = [];
   for(let i = 0; i < 15; i++) {
     barisBawaan.push(['', '', '']); 
   }
 
-  // MENGHIDUPKAN FITUR SPREADSHEET (3 Kolom Baru)
+  // MENGHIDUPKAN FITUR SPREADSHEET (UKURAN KOLOM DIPERLEBAR)
   mySpreadsheet = jspreadsheet(document.getElementById('spreadsheet'), {
     data: barisBawaan,
     columns: [
-      { type: 'text', title: 'NIK 16 Digit (*)', width: 180 },
-      { type: 'text', title: 'Nama TK (*)', width: 300 }, // Kolom dilebarkan untuk nama
-      { type: 'text', title: 'No. Telepon (*)', width: 180 }
+      // Total lebar disesuaikan agar mengisi ruang kosong form
+      { type: 'text', title: 'NIK', width: 220 },
+      { type: 'text', title: 'Nama TK', width: 400 },
+      { type: 'text', title: 'No. Telepon', width: 220 }
     ],
     tableOverflow: true,   
     tableWidth: "100%",    
@@ -85,27 +86,36 @@ document.getElementById("formData").addEventListener("submit", function(e){
   let pendaftar = [];
   let adaError = false;
 
-  // 2. Evaluasi baris per baris (Kini hanya row[0], row[1], row[2])
+  // Evaluasi baris per baris
   rawData.forEach((row, index) => {
     let nik = (row[0] || "").toString().trim();
     let nama_tk = (row[1] || "").toString().trim();
     let telepon = (row[2] || "").toString().trim();
 
     if (nik !== "" || nama_tk !== "" || telepon !== "") {
-      // Jika salah satu diisi, semua 3 wajib diisi
+      // 1. Cek apakah ada kolom yang bolong
       if (nik === "" || nama_tk === "" || telepon === "") {
         alert(`Peringatan: Data belum lengkap pada Baris ke-${index + 1} di Spreadsheet!`);
         adaError = true;
         return; 
       }
 
+      // 2. VALIDASI KETAT NIK (Harus Angka)
+      let isHanyaAngka = /^\d+$/.test(nik); // Memeriksa apakah isinya cuma angka 0-9
+      if (!isHanyaAngka) {
+        alert(`Peringatan: NIK pada Baris ke-${index + 1} HARUS BERUPA ANGKA!\n(Ditemukan huruf, spasi, atau karakter lain)`);
+        adaError = true;
+        return;
+      }
+
+      // 3. VALIDASI KETAT NIK (Harus Pas 16 Digit)
       if (nik.length !== 16) {
-        alert(`Peringatan: NIK pada Baris ke-${index + 1} harus tepat 16 digit!`);
+        alert(`Peringatan: NIK pada Baris ke-${index + 1} harus TEPAT 16 DIGIT!\n(Saat ini Anda memasukkan ${nik.length} digit)`);
         adaError = true;
         return;
       }
       
-      // Masukkan ke array jika valid
+      // Jika semua aman, masukkan ke array
       pendaftar.push({ nik: nik, nama_tk: nama_tk, telepon: telepon });
     }
   });
@@ -131,7 +141,7 @@ document.getElementById("formData").addEventListener("submit", function(e){
     pendaftar: pendaftar
   };
 
-  // URL APPS SCRIPT SEMENTARA KITA KOSONGKAN DULU, NANTI DIISI DI LANGKAH 3
+  // ⚠️ JANGAN LUPA GANTI URL DI BAWAH INI DENGAN URL APPS SCRIPT ANDA ⚠️
   const scriptURL = "https://script.google.com/macros/s/AKfycbz4WhOQWVoP1xIrI98RsofVA0UF03BGNHrQjahhLZOrvYdmbk3vWo2bXhCY5so5umZ1Tw/exec"; 
 
   let btnSubmit = document.querySelector('.submit-btn');
