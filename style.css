@@ -11,8 +11,10 @@ body {
 }
 
 #formData {
+  max-width: 900px; /* Ubah angka ini menjadi 900px atau 1000px agar form lebih lebar */
   width: 100%;
-  max-width: 640px; 
+  margin: auto;
+  /* (biarkan kode background, padding, dll yang sudah ada sebelumnya) */
 }
 
 /* Judul Form */
@@ -173,4 +175,62 @@ button {
 .submit-btn:disabled {
   background-color: #b294df;
   cursor: not-allowed;
+}
+
+/* --- DESAIN TABEL SHEET BARU --- */
+.table-container {
+  width: 100%;
+  overflow-x: auto; /* Agar tabel bisa di-scroll ke samping di HP */
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #dadce0;
+  background: white;
+}
+
+.pendaftar-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; /* Lebar minimum agar input tidak terlalu sempit */
+}
+
+.pendaftar-table th {
+  background-color: #f6fafe;
+  color: #202124;
+  font-family: 'Google Sans', 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 2px solid #dadce0;
+}
+
+.pendaftar-table td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #dadce0;
+  vertical-align: middle;
+}
+
+/* Modifikasi input khusus di dalam tabel */
+.pendaftar-table input[type="text"],
+.pendaftar-table input[type="tel"] {
+  border-bottom: 1px solid transparent; /* Sembunyikan garis saat tidak aktif */
+  padding: 8px 5px;
+  font-size: 14px;
+}
+
+.pendaftar-table input[type="text"]:focus,
+.pendaftar-table input[type="tel"]:focus {
+  border-bottom: 2px solid #673ab7;
+}
+
+.pendaftar-table .hapus-btn {
+  margin: 0;
+  float: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  background-color: #fce8e6;
+}
+
+.pendaftar-table .hapus-btn:hover {
+  background-color: #fad2cf;
 }
