@@ -69,7 +69,8 @@ document.addEventListener("DOMContentLoaded", function() {
       if (col === 0) {
         let parts = valStr.split('-');
         if(parts.length !== 3) {
-          alert(`❌ ERROR Baris ${row + 1}:\nFormat Wilayah salah!\nGunakan tanda strip pemisah. Contoh: MEDAN DELI - KOTA BANGUN - I`);
+          // Peringatan diubah agar tidak menggunakan spasi
+          alert(`❌ ERROR Baris ${row + 1}:\nFormat Wilayah salah!\nGunakan tanda strip pemisah TANPA spasi. Contoh: MEDAN DELI-KOTA BANGUN-I`);
           mySpreadsheet.setValueFromCoords(col, row, ""); 
           return;
         }
@@ -88,7 +89,8 @@ document.addEventListener("DOMContentLoaded", function() {
           alert(`❌ ERROR Baris ${row + 1}:\nKepling "${kep}" tidak valid untuk Kelurahan ${kel}!`);
           mySpreadsheet.setValueFromCoords(col, row, "");
         } else {
-          let wilayahRapi = `${kec} - ${kel} - ${kep}`;
+          // DI SINI PERUBAHANNYA: Menggabungkan kembali TANPA spasi
+          let wilayahRapi = `${kec}-${kel}-${kep}`;
           if(valStr !== wilayahRapi) mySpreadsheet.setValueFromCoords(col, row, wilayahRapi);
         }
       }
@@ -169,7 +171,6 @@ document.getElementById("formData").addEventListener("submit", function(e){
     return;
   }
 
-  // TANGGAL SOSIALISASI TELAH DIHAPUS DARI SINI
   let data = {
     nama: document.getElementById("nama").value,
     nim: document.getElementById("nim").value,
