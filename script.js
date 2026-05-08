@@ -2,7 +2,7 @@ let mySpreadsheet;
 let existingNiksDatabase = []; 
 
 // ⚠️ PASTE URL APPS SCRIPT ANDA DI SINI ⚠️
-const scriptURL = "https://script.google.com/macros/s/AKfycbzIAZibI1GWExceD01t4hESTDbXUzpDNQLIRrFI2dLKFWbdrG-NEGuj4iaavJYUplnn2A/exec"; 
+const scriptURL = "https://script.google.com/macros/s/AKfycbxzLVG6pwZSyefNGDiGQnGBEy-5mraA3hpztB5BjIPqmWJhOGZpWjEG8SfrhF-eUZAEdg/exec"; 
 
 document.addEventListener("DOMContentLoaded", function() {
   if (typeof dataWilayah === "undefined") {
