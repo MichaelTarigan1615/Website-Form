@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     },
 
+
     onchange: function(instance, cell, x, y, value) {
       let col = parseInt(x);
       let row = parseInt(y);
@@ -71,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (col === 0) {
         let parts = valStr.split('-');
         if(parts.length !== 3) {
-          alert(`❌ ERROR Baris ${row + 1}:\nFormat Wilayah salah!\nGunakan tanda strip pemisah TANPA spasi. Contoh: MEDAN DELI-KOTA BANGUN-I`);
+          alert(`❌ ERROR Baris ${row + 1}:\nFormat Wilayah salah!\nGunakan tanda strip tanpa spasi. Contoh: MEDAN DELI-KOTA BANGUN-I`);
           mySpreadsheet.setValueFromCoords(col, row, ""); 
           return;
         }
@@ -81,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let kep = parts[2].trim();
 
         if (!dataWilayah[kec] || !dataWilayah[kec][kel] || !dataWilayah[kec][kel].includes(kep)) {
-          alert(`❌ ERROR Baris ${row + 1}:\nWilayah tidak valid sesuai database!`);
+          alert(`❌ ERROR Baris ${row + 1}:\nWilayah tidak valid!`);
           mySpreadsheet.setValueFromCoords(col, row, "");
         } else {
           let wilayahRapi = `${kec}-${kel}-${kep}`;
@@ -89,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
 
-      // 2. VALIDASI NIK & PENGOSONGAN BARIS OTOMATIS
+      // 2. VALIDASI NIK & PENGOSONGAN BARIS TOTAL
       if (col === 1) {
         if (valStr.length < 16) {
           alert(`⚠️ Peringatan (Baris ${row + 1}): NIK kurang dari 16 digit!`);
@@ -98,27 +99,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
           // Cek ke Database Google Sheet
           if (existingNiksDatabase.includes(valStr)) {
-            alert(`🚨 DITOLAK (Baris ${row + 1}):\nNIK ${valStr} SUDAH TERDAFTAR DI SPREADSHEET!\n\nBaris ini akan dikosongkan otomatis.`);
+            alert(`🚨 DITOLAK (Baris ${row + 1}):\nNIK ${valStr} SUDAH TERDAFTAR DI SPREADSHEET!`);
             isDuplicate = true;
           }
 
-          // Cek ganda di tabel pendaftar saat ini
+          // Cek ganda di tabel saat ini
           let allData = mySpreadsheet.getData();
           for(let i=0; i<allData.length; i++) {
               if(i !== row && allData[i][1] == valStr) {
-                  alert(`🚨 DITOLAK (Baris ${row + 1}):\nNIK ${valStr} GANDA dengan Baris ${i+1}!\n\nBaris ini akan dikosongkan otomatis.`);
+                  alert(`🚨 DITOLAK (Baris ${row + 1}):\nNIK ${valStr} GANDA dengan Baris ${i+1}!`);
                   isDuplicate = true;
                   break;
               }
           }
 
           if (isDuplicate) {
-            // PERINTAH KRUSIAL: Kosongkan satu baris penuh (5 kolom)
-            mySpreadsheet.setRowData(row, ['', '', '', '', '']);
+            // JEDA WAKTU: Memberi kesempatan proses paste selesai, lalu hapus total
+            setTimeout(() => {
+              mySpreadsheet.setRowData(row, ['', '', '', '', '']);
+            }, 100); // Jeda 100 milidetik
           }
         }
       }
     }
+
+// ... (Sisa kode ke bawah tetap sama) ...
   });
 });
 
