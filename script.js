@@ -141,21 +141,24 @@ document.getElementById("formData").addEventListener("submit", function(e){
   let adaError = false;
 
   rawData.forEach((row, index) => {
-    let wilayah = (row[0] || "").toString().trim(); 
-    let nik = (row[1] || "").toString().trim();
-    let nama_tk = (row[2] || "").toString().trim();
-    let telepon = (row[3] || "").toString().trim();
-    let tgl_daftar = (row[4] || "").toString().trim(); 
+    let wilayah = (row[0] || "").toString().trim(); 
+    let nik = (row[1] || "").toString().trim();
+    let nama_tk = (row[2] || "").toString().trim();
+    let telepon = (row[3] || "").toString().trim();
+    
+    // --- POTONG JAM DI SINI ---
+    // .split(' ')[0] akan membuang spasi dan jam, menyisakan "DD/MM/YYYY" atau "YYYY-MM-DD"
+    let tgl_daftar = (row[4] || "").toString().trim().split(' ')[0]; 
 
-    if (wilayah !== "" || nik !== "" || nama_tk !== "" || telepon !== "" || tgl_daftar !== "") {
-      if (wilayah === "" || nik === "" || nama_tk === "" || telepon === "" || tgl_daftar === "") {
-        alert(`Gagal Kirim: Data tidak lengkap pada Baris ke-${index + 1}!`);
-        adaError = true;
-        return; 
-      }
-      pendaftar.push({ wilayah, nik, nama_tk, telepon, tanggal_daftar: tgl_daftar });
-    }
-  });
+    if (wilayah !== "" || nik !== "" || nama_tk !== "" || telepon !== "" || tgl_daftar !== "") {
+      if (wilayah === "" || nik === "" || nama_tk === "" || telepon === "" || tgl_daftar === "") {
+        alert(`Gagal Kirim: Data tidak lengkap pada Baris ke-${index + 1}!`);
+        adaError = true;
+        return; 
+      }
+      pendaftar.push({ wilayah, nik, nama_tk, telepon, tanggal_daftar: tgl_daftar });
+    }
+  });
 
   if (adaError) return; 
   if (pendaftar.length === 0) {
