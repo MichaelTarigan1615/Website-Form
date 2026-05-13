@@ -2,7 +2,7 @@ let mySpreadsheet;
 let existingNiksDatabase = []; 
 
 // ⚠️ PASTE URL APPS SCRIPT ANDA DI SINI ⚠️
-const scriptURL = "https://script.google.com/macros/s/AKfycbxzLVG6pwZSyefNGDiGQnGBEy-5mraA3hpztB5BjIPqmWJhOGZpWjEG8SfrhF-eUZAEdg/exec"; 
+const scriptURL = "MASUKKAN_URL_BARU_DI_SINI"; 
 
 document.addEventListener("DOMContentLoaded", function() {
   if (typeof dataWilayah === "undefined") {
@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     },
 
-
     onchange: function(instance, cell, x, y, value) {
       let col = parseInt(x);
       let row = parseInt(y);
@@ -68,23 +67,46 @@ document.addEventListener("DOMContentLoaded", function() {
 
       if (valStr === "") return; 
 
-      // 1. VALIDASI WILAYAH
+      // 1. LOGIKA VALIDASI WILAYAH YANG SUPER CERDAS
       if (col === 0) {
         let parts = valStr.split('-');
-        if(parts.length !== 3) {
-          alert(`❌ ERROR Baris ${row + 1}:\nFormat Wilayah salah!\nGunakan tanda strip tanpa spasi. Contoh: MEDAN DELI-KOTA BANGUN-I`);
+        
+        // Cek minimal ada 2 tanda strip (3 bagian)
+        if(parts.length < 3) {
+          alert(`❌ ERROR Baris ${row + 1}:\nFormat Wilayah salah!\nGunakan tanda strip. Contoh: MEDAN DELI-KOTA BANGUN-I`);
           mySpreadsheet.setValueFromCoords(col, row, ""); 
           return;
         }
 
         let kec = parts[0].trim();
-        let kel = parts[1].trim();
-        let kep = parts[2].trim();
+        let kel = "";
+        let kep = "";
+        let isValid = false;
 
-        if (!dataWilayah[kec] || !dataWilayah[kec][kel] || !dataWilayah[kec][kel].includes(kep)) {
-          alert(`❌ ERROR Baris ${row + 1}:\nWilayah tidak valid!`);
+        // Jika Kecamatan ada di database, kita tes kombinasi Kelurahan & Kepling-nya
+        if (dataWilayah[kec]) {
+          // Loop untuk menguji di mana letak pemisah antara Kelurahan dan Kepling
+          // Ini sangat berguna jika nama Kelurahan mengandung strip (misal: SIDORAME BARAT-I)
+          for (let i = 1; i < parts.length - 1; i++) {
+            let testKel = parts.slice(1, i + 1).join('-').trim();
+            let testKep = parts.slice(i + 1).join('-').trim();
+
+            // Jika kombinasi ini cocok dengan dataWilayah.js
+            if (dataWilayah[kec][testKel] && dataWilayah[kec][testKel].includes(testKep)) {
+              kel = testKel;
+              kep = testKep;
+              isValid = true;
+              break; // Hentikan pencarian jika sudah ketemu yang pas
+            }
+          }
+        }
+
+        // Keputusan akhir validasi
+        if (!isValid) {
+          alert(`❌ ERROR Baris ${row + 1}:\nWilayah "${valStr}" tidak ditemukan di database! Periksa kembali ejaannya.`);
           mySpreadsheet.setValueFromCoords(col, row, "");
         } else {
+          // Rapatkan kembali dengan standar yang bersih
           let wilayahRapi = `${kec}-${kel}-${kep}`;
           if(valStr !== wilayahRapi) mySpreadsheet.setValueFromCoords(col, row, wilayahRapi);
         }
@@ -97,13 +119,11 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
           let isDuplicate = false;
 
-          // Cek ke Database Google Sheet
           if (existingNiksDatabase.includes(valStr)) {
             alert(`🚨 DITOLAK (Baris ${row + 1}):\nNIK ${valStr} SUDAH TERDAFTAR DI SPREADSHEET!`);
             isDuplicate = true;
           }
 
-          // Cek ganda di tabel saat ini
           let allData = mySpreadsheet.getData();
           for(let i=0; i<allData.length; i++) {
               if(i !== row && allData[i][1] == valStr) {
@@ -114,16 +134,13 @@ document.addEventListener("DOMContentLoaded", function() {
           }
 
           if (isDuplicate) {
-            // JEDA WAKTU: Memberi kesempatan proses paste selesai, lalu hapus total
             setTimeout(() => {
               mySpreadsheet.setRowData(row, ['', '', '', '', '']);
-            }, 100); // Jeda 100 milidetik
+            }, 100); 
           }
         }
       }
     }
-
-// ... (Sisa kode ke bawah tetap sama) ...
   });
 });
 
@@ -141,24 +158,26 @@ document.getElementById("formData").addEventListener("submit", function(e){
   let adaError = false;
 
   rawData.forEach((row, index) => {
-    let wilayah = (row[0] || "").toString().trim(); 
-    let nik = (row[1] || "").toString().trim();
-    let nama_tk = (row[2] || "").toString().trim();
-    let telepon = (row[3] || "").toString().trim();
-    
-    // --- POTONG JAM DI SINI ---
-    // .split(' ')[0] akan membuang spasi dan jam, menyisakan "DD/MM/YYYY" atau "YYYY-MM-DD"
-    let tgl_daftar = (row[4] || "").toString().trim().split(' ')[0]; 
+    let wilayah = (row[0] || "").toString().trim(); 
+    let nik = (row[1] || "").toString().trim();
+    let nama_tk = (row[2] || "").toString().trim();
+    let telepon = (row[3] || "").toString().trim();
+    let tgl_daftar = (row[4] || "").toString().trim(); 
 
-    if (wilayah !== "" || nik !== "" || nama_tk !== "" || telepon !== "" || tgl_daftar !== "") {
-      if (wilayah === "" || nik === "" || nama_tk === "" || telepon === "" || tgl_daftar === "") {
-        alert(`Gagal Kirim: Data tidak lengkap pada Baris ke-${index + 1}!`);
-        adaError = true;
-        return; 
-      }
-      pendaftar.push({ wilayah, nik, nama_tk, telepon, tanggal_daftar: tgl_daftar });
-    }
-  });
+    if (wilayah !== "" || nik !== "" || nama_tk !== "" || telepon !== "" || tgl_daftar !== "") {
+      if (wilayah === "" || nik === "" || nama_tk === "" || telepon === "" || tgl_daftar === "") {
+        alert(`Gagal Kirim: Data tidak lengkap pada Baris ke-${index + 1}!`);
+        adaError = true;
+        return; 
+      }
+      if (nik.length !== 16) {
+        alert(`Gagal Kirim: NIK pada Baris ke-${index + 1} masih kurang dari 16 digit!`);
+        adaError = true;
+        return;
+      }
+      pendaftar.push({ wilayah, nik, nama_tk, telepon, tanggal_daftar: tgl_daftar });
+    }
+  });
 
   if (adaError) return; 
   if (pendaftar.length === 0) {
