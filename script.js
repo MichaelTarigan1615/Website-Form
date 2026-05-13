@@ -1,5 +1,7 @@
 let mySpreadsheet; 
 let existingNiksDatabase = []; 
+let validWilayahList = []; 
+let normalizedToStandard = {};
 
 // ⚠️ PASTE URL APPS SCRIPT ANDA DI SINI ⚠️
 const scriptURL = "MASUKKAN_URL_BARU_DI_SINI"; 
@@ -9,6 +11,23 @@ document.addEventListener("DOMContentLoaded", function() {
     alert("⚠️ GAGAL: File dataWilayah.js tidak terbaca!");
     return;
   }
+
+  // =========================================================
+  // KAMUS CERDAS WILAYAH (SOLUSI FINAL SPASI & STRIP)
+  // =========================================================
+  Object.keys(dataWilayah).forEach(kec => {
+    Object.keys(dataWilayah[kec]).forEach(kel => {
+      dataWilayah[kec][kel].forEach(kep => {
+        let standard = `${kec}-${kel}-${kep}`;
+        validWilayahList.push(standard);
+        
+        // Membuat "Kamus Rahasia" tanpa spasi dan strip
+        // Contoh: "MEDAN PERJUANGAN-SEI KERA HILIR I-I" -> "MEDANPERJUANGANSEIKERAHILIRII"
+        let normalized = standard.replace(/[\s\-]/g, '');
+        normalizedToStandard[normalized] = standard;
+      });
+    });
+  });
 
   // Menarik database NIK dari server saat web dibuka
   fetch(scriptURL + "?action=getNiks")
@@ -67,59 +86,26 @@ document.addEventListener("DOMContentLoaded", function() {
 
       if (valStr === "") return; 
 
-      // 1. VALIDASI WILAYAH SUPER CERDAS (NORMALISASI)
+      // 1. VALIDASI WILAYAH (KAMUS CERDAS)
       if (col === 0) {
-        let parts = valStr.split('-');
-        if(parts.length < 3) {
-          alert(`❌ ERROR Baris ${row + 1}:\nFormat Wilayah salah!\nGunakan tanda strip tanpa spasi. Contoh: MEDAN DELI-KOTA BANGUN-I`);
-          mySpreadsheet.setValueFromCoords(col, row, ""); 
-          return;
+        // Cek Pilihan 1: Apakah ketikannya sudah 100% sempurna?
+        if (validWilayahList.includes(valStr)) {
+          return; // Lolos
         }
 
-        // Normalisasi Kecamatan (Mengatasi jika user mengetik MEDANPERJUANGAN)
-        let rawKec = parts[0].trim();
-        let normalRawKec = rawKec.replace(/[\s\-]/g, '');
-        let kec = Object.keys(dataWilayah).find(k => k.replace(/[\s\-]/g, '') === normalRawKec);
-
-        let kel = "";
-        let kep = "";
-        let isValid = false;
-
-        if (kec) {
-          let validKelurahans = Object.keys(dataWilayah[kec]);
-
-          // Uji semua kemungkinan letak pemisah antara Kelurahan dan Kepling
-          for (let i = 1; i < parts.length - 1; i++) {
-            let rawKel = parts.slice(1, i + 1).join('-').trim();
-            let rawKep = parts.slice(i + 1).join('-').trim();
-
-            // SULAP NORMALISASI: Hapus semua spasi dan strip, lalu cocokkan!
-            let normalRawKel = rawKel.replace(/[\s\-]/g, '');
-            let matchedKel = validKelurahans.find(k => k.replace(/[\s\-]/g, '') === normalRawKel);
-
-            if (matchedKel) {
-               let validKeplings = dataWilayah[kec][matchedKel];
-               let normalRawKep = rawKep.replace(/[\s\-]/g, '');
-               let matchedKep = validKeplings.find(kp => kp.replace(/[\s\-]/g, '') === normalRawKep);
-
-               if (matchedKep) {
-                 kel = matchedKel; // Menggunakan ejaan ASLI dari database
-                 kep = matchedKep; // Menggunakan ejaan ASLI dari database
-                 isValid = true;
-                 break;
-               }
-            }
-          }
-        }
-
-        if (!isValid) {
-          alert(`❌ ERROR Baris ${row + 1}:\nWilayah "${valStr}" tidak valid!\nPeriksa kembali apakah ejaan kelurahan/kepling sudah benar.`);
-          mySpreadsheet.setValueFromCoords(col, row, "");
+        // Cek Pilihan 2: Jika ada beda spasi/strip, gunakan Kamus Cerdas
+        let normalizedInput = valStr.replace(/[\s\-]/g, '');
+        
+        if (normalizedToStandard[normalizedInput]) {
+          // Jika ketemu padanannya, KOREKSI OTOMATIS ke format baku database
+          let standardWilayah = normalizedToStandard[normalizedInput];
+          mySpreadsheet.setValueFromCoords(col, row, standardWilayah);
         } else {
-          // Otomatis kembalikan ke format baku database (Spasi/Strip akan terkoreksi sendiri)
-          let wilayahRapi = `${kec}-${kel}-${kep}`;
-          if(valStr !== wilayahRapi) mySpreadsheet.setValueFromCoords(col, row, wilayahRapi);
+          // Jika tidak ada di kamus sama sekali, berarti wilayahnya memang salah
+          alert(`❌ ERROR Baris ${row + 1}:\nWilayah "${valStr}" tidak ditemukan!\nPastikan ejaan Kecamatan, Kelurahan, dan Kepling benar.`);
+          mySpreadsheet.setValueFromCoords(col, row, ""); 
         }
+        return; // Hentikan proses agar tidak lanjut ke logika NIK
       }
 
       // 2. VALIDASI NIK & PENGOSONGAN BARIS TOTAL
