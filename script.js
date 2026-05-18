@@ -4,7 +4,7 @@ let validWilayahList = [];
 let normalizedToStandard = {};
 
 // ⚠️ PASTE URL APPS SCRIPT ANDA DI SINI ⚠️
-const scriptURL = "https://script.google.com/macros/s/AKfycbxzLVG6pwZSyefNGDiGQnGBEy-5mraA3hpztB5BjIPqmWJhOGZpWjEG8SfrhF-eUZAEdg/exec"; 
+const scriptURL = "https://script.google.com/macros/s/AKfycbyOQM1L1VJt4Ziu2N1Vp3mcDqngrjAsBku8eYK99p9ow-GoW6ZBPUZqe-FugRsWt8cDBQ/exec"; 
 
 document.addEventListener("DOMContentLoaded", function() {
   if (typeof dataWilayah === "undefined") {
@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function() {
         validWilayahList.push(standard);
         
         // Membuat "Kamus Rahasia" tanpa spasi dan strip
-        // Contoh: "MEDAN PERJUANGAN-SEI KERA HILIR I-I" -> "MEDANPERJUANGANSEIKERAHILIRII"
         let normalized = standard.replace(/[\s\-]/g, '');
         normalizedToStandard[normalized] = standard;
       });
@@ -88,24 +87,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
       // 1. VALIDASI WILAYAH (KAMUS CERDAS)
       if (col === 0) {
-        // Cek Pilihan 1: Apakah ketikannya sudah 100% sempurna?
         if (validWilayahList.includes(valStr)) {
-          return; // Lolos
+          return; 
         }
 
-        // Cek Pilihan 2: Jika ada beda spasi/strip, gunakan Kamus Cerdas
         let normalizedInput = valStr.replace(/[\s\-]/g, '');
         
         if (normalizedToStandard[normalizedInput]) {
-          // Jika ketemu padanannya, KOREKSI OTOMATIS ke format baku database
           let standardWilayah = normalizedToStandard[normalizedInput];
           mySpreadsheet.setValueFromCoords(col, row, standardWilayah);
         } else {
-          // Jika tidak ada di kamus sama sekali, berarti wilayahnya memang salah
           alert(`❌ ERROR Baris ${row + 1}:\nWilayah "${valStr}" tidak ditemukan!\nPastikan ejaan Kecamatan, Kelurahan, dan Kepling benar.`);
           mySpreadsheet.setValueFromCoords(col, row, ""); 
         }
-        return; // Hentikan proses agar tidak lanjut ke logika NIK
+        return; 
       }
 
       // 2. VALIDASI NIK & PENGOSONGAN BARIS TOTAL
@@ -155,6 +150,7 @@ document.getElementById("formData").addEventListener("submit", function(e){
 
   rawData.forEach((row, index) => {
     let wilayah = (row[0] || "").toString().trim(); 
+    // Mengamankan NIK agar dikonversi murni menjadi String/Teks
     let nik = (row[1] || "").toString().trim();
     let nama_tk = (row[2] || "").toString().trim();
     let telepon = (row[3] || "").toString().trim();
