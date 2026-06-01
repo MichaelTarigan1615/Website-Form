@@ -4,7 +4,7 @@ let validWilayahList = [];
 let normalizedToStandard = {};
 
 // ⚠️ PASTE URL APPS SCRIPT ANDA DI SINI ⚠️
-const scriptURL = "https://script.google.com/macros/s/AKfycbyOQM1L1VJt4Ziu2N1Vp3mcDqngrjAsBku8eYK99p9ow-GoW6ZBPUZqe-FugRsWt8cDBQ/exec"; 
+const scriptURL = "https://script.google.com/macros/s/AKfycbx49aPeO0vksoEekHVSl30kNIl_iimkMPBzHNuG3WVho-83ND8SVs7d8OJUPQ-u1GQ0hw/exec"; 
 
 document.addEventListener("DOMContentLoaded", function() {
   if (typeof dataWilayah === "undefined") {
@@ -45,11 +45,11 @@ document.addEventListener("DOMContentLoaded", function() {
   mySpreadsheet = jspreadsheet(document.getElementById('spreadsheet'), {
     data: barisBawaan,
     columns: [
-      { type: 'text', title: 'Wilayah (*)', width: 250 }, 
-      { type: 'text', title: 'NIK 16 Digit (*)', width: 150 },
-      { type: 'text', title: 'Nama TK (*)', width: 220 },
-      { type: 'text', title: 'No. Telepon (*)', width: 140 },
-      { type: 'calendar', title: 'Tgl Daftar (*)', width: 110, options: { format: 'DD/MM/YYYY' } }
+      { type: 'text', title: 'Wilayah', width: 250 }, 
+      { type: 'text', title: 'NIK', width: 150 },
+      { type: 'text', title: 'Nama TK', width: 220 },
+      { type: 'text', title: 'No. Telepon', width: 140 }, 
+      { type: 'calendar', title: 'Tgl Daftar', width: 110, options: { format: 'DD/MM/YYYY' } }
     ],
     tableOverflow: true,   
     tableWidth: "100%",    
@@ -156,17 +156,23 @@ document.getElementById("formData").addEventListener("submit", function(e){
     let telepon = (row[3] || "").toString().trim();
     let tgl_daftar = (row[4] || "").toString().trim(); 
 
+    // Mengecek apakah baris ini sedang diisi (salah satu sel tidak kosong)
     if (wilayah !== "" || nik !== "" || nama_tk !== "" || telepon !== "" || tgl_daftar !== "") {
-      if (wilayah === "" || nik === "" || nama_tk === "" || telepon === "" || tgl_daftar === "") {
-        alert(`Gagal Kirim: Data tidak lengkap pada Baris ke-${index + 1}!`);
+      
+      // Nomor Telepon tidak diwajibkan lagi, cukup cek kolom lain
+      if (wilayah === "" || nik === "" || nama_tk === "" || tgl_daftar === "") {
+        alert(`Gagal Kirim: Data tidak lengkap pada Baris ke-${index + 1}! (Nomor Telepon boleh dikosongkan)`);
         adaError = true;
         return; 
       }
+      
+      // Validasi ketat NIK 16 digit tetap dipertahankan
       if (nik.length !== 16) {
         alert(`Gagal Kirim: NIK pada Baris ke-${index + 1} masih kurang dari 16 digit!`);
         adaError = true;
         return;
       }
+      
       pendaftar.push({ wilayah, nik, nama_tk, telepon, tanggal_daftar: tgl_daftar });
     }
   });
